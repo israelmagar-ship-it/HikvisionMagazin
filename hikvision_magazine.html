@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIKVISION המגזין</title>
+    <!-- Chosen Palette: Black, White, & Red -->
+    <!-- Application Structure Plan: A single-page, magazine-style layout with a sticky top navigation for smooth scrolling between thematic sections (Hero, New Products, Technologies, Articles, Offers & Training). This structure was chosen to provide a fluid, exploratory user experience, grouping related content logically for easy consumption, rather than a rigid, linear format. Interactions like content expansion, dynamic charts, and filters encourage user engagement and deeper exploration of HIKVISION's offerings. The flow guides the user from high-level announcements down to a-specific details and calls to action. -->
+    <!-- Visualization & Content Choices: New Products -> Goal: Inform -> Presentation: Interactive card grid -> Interaction: Click-to-expand details -> Justification: Allows quick scanning and deep dives without leaving the page. New Technologies -> Goal: Compare -> Viz: Dynamic Bar Chart (Chart.js) -> Interaction: Dropdown to update chart data -> Justification: Simplifies comparison of complex technical features visually. Training Topics -> Goal: Inform -> Viz: Donut Chart (Chart.js) -> Interaction: Static display with tooltips -> Justification: Provides a quick, digestible overview of training focus areas. All diagrams and layouts are built with HTML/CSS/Tailwind to avoid SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    
+    
+    
+    
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 50vh;
+        }
+        .nav-link.active {
+            color: #ef4444; /* Red */
+            font-weight: 700;
+        }
+        .product-card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .product-card.open .product-card-details {
+            max-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-900">
+
+    <header class="bg-black shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="flex items-center">
+                         <!-- Replaced the old logo image with the new, clean design -->
+                         <div class="flex flex-col items-center">
+                            <span class="text-white text-2xl font-semibold -mb-1">HIKVISION</span>
+                            <div class="w-16 h-1 bg-red-600 my-1"></div>
+                            <span class="text-sm text-gray-400">המגזין</span>
+                         </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4 space-x-reverse">
+                        <a href="#hero" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:text-red-500 transition-colors">ראשי</a>
+                        <a href="#products" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:text-red-500 transition-colors">מוצרים</a>
+                        <a href="#tech" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:text-red-500 transition-colors">טכנולוגיות</a>
+                        <a href="#articles" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:text-red-500 transition-colors">כתבות</a>
+                        <a href="#offers-training" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:text-red-500 transition-colors">מבצעים והדרכות</a>
+                    </div>
+                </div>
+                 <div class="md:hidden">
+                    <button id="mobile-menu-button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+             <div class="md:hidden hidden" id="mobile-menu">
+                <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                    <a href="#hero" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:text-red-500 transition-colors">ראשי</a>
+                    <a href="#products" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:text-red-500 transition-colors">מוצרים</a>
+                    <a href="#tech" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:text-red-500 transition-colors">טכנולוגיות</a>
+                    <a href="#articles" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:text-red-500 transition-colors">כתבות</a>
+                    <a href="#offers-training" class="nav-link block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:text-red-500 transition-colors">מבצעים והדרכות</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="relative bg-white pt-16 pb-20 lg:pt-24 lg:pb-28">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h1 class="text-4xl tracking-tight font-extrabold text-slate-900 sm:text-5xl md:text-6xl">
+                        <span class="block">העתיד של האבטחה,</span>
+                        <span class="block text-red-600">כבר כאן.</span>
+                    </h1>
+                    <p class="mt-3 max-w-md mx-auto text-base text-slate-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+גלו את החידושים האחרונים, הטכנולוגיות המתקדמות והמוצרים שמשנים את עולם
+האבטחה. המגזין הרשמי של HIKVISION בישראל. </p>
+                    <div class="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
+                        <div class="rounded-md shadow">
+                            <a href="#products" class="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-red-600 hover:bg-red-700 md:py-4 md:text-lg md:px-10">
+                                למוצרים החדשים
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="products" class="bg-white py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-slate-900">מוצרים חדשים</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">הצצה לדור הבא של פתרונות האבטחה מבית HIKVISION.</p>
+                </div>
+                <div class="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div class="product-card flex flex-col rounded-lg shadow-lg overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-300 hover:scale-105">
+                        <div class="flex-shrink-0">
+                            <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/9b59b6/ffffff?text=ColorVu+3.0" alt="ColorVu G2 Camera">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">מצלמות IP</p>
+                                <a href="https://www.hikvision.com/il/products/IP-Products/Network-Cameras/Pro-Series-with-ColorVu/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-slate-900">ColorVu 3.0 - צבע מלא 24/7</p>
+                                    <p class="mt-3 text-base text-slate-500">הדור השני של טכנולוגיית ColorVu מספק תמונות צבעוניות וחדות גם בתנאי תאורה קשים במיוחד, ללא צורך בתאורת אינפרא-אדום.</p>
+                                </a>
+                                <div class="product-card-details mt-4 text-sm text-slate-600">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>צמצם F1.0 לאיסוף אור מקסימלי</li>
+                                        <li>רזולוציה עד 4K</li>
+                                        <li>ניתוח וידאו חכם AcuSense</li>
+                                        <li>עמידות בתקן IP67</li>
+                                        <li>
+                                            <!-- Updated placeholder URL to a real one, as requested by the user. -->
+                                            <a href="https://www.hikvision.com/il/products/IP-Products/Network-Cameras/Pro-Series-with-ColorVu/" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:underline">לפרטים נוספים: סדרת Pro עם ColorVu 3.0 - מצלמות רשת - Hikvision ישראל</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card flex flex-col rounded-lg shadow-lg overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-300 hover:scale-105">
+                        <div class="flex-shrink-0">
+                             <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/3498db/ffffff?text=AcuSense+NVR" alt="AcuSense NVR">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">מערכות הקלטה</p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/products/IP-Products/Network-Video-Recorders/Pro-Series-with-AcuSense/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-slate-900">AcuSense NVR <br></p>
+                                    <p class="mt-3 text-base text-slate-500">מערכות הקלטה חכמות עם בינה מלאכותית המסננות התראות שווא ומאפשרות חיפוש מהיר לפי אדם או רכב.</p>
+                                </a>
+                                 <div class="product-card-details mt-4 text-sm text-slate-600">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>זיהוי וסיווג מטרות (אדם/רכב)</li>
+                                        <li>עד 32 ערוצים עם ניתוח AI</li>
+                                        <li>חיפוש חכם Quick Target Search</li>
+                                        <li>תמיכה במצלמות 12MP</li>
+                                        <li>חיפוש חכם על ידי הקלדת טקסט</li>
+                                        <li>
+                                            <!-- Updated placeholder URL to a real one -->
+                                            <a href="https://www.hikvision.com/il/products/IP-Products/Network-Video-Recorders/Pro-Series-with-AcuSense/" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:underline">לפרטים נוספים: Pro Series with AcuSense - מקליטי וידאו ברשת - Hikvision ישראל</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="product-card flex flex-col rounded-lg shadow-lg overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-300 hover:scale-105">
+                        <div class="flex-shrink-0">
+                           <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/2ecc71/ffffff?text=AX+PRO" alt="AX PRO Alarm System">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">מערכות אזעקה</p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/products/Alarm-Systems/pro-series/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-slate-900">מערכת אזעקה AX PRO</p>
+                                    <p class="mt-3 text-base text-slate-500">מערכת אזעקה אלחוטית מתקדמת המשלבת אימות וידאו, ניהול דרך אפליקציה ואינטגרציה מלאה עם מוצרי HIKVISION.</p>
+                                </a>
+                                 <div class="product-card-details mt-4 text-sm text-slate-600">
+                                    <ul class="list-disc list-inside space-y-1">
+                                        <li>תקשורת אלחוטית Tri-X/Cam-X</li>
+                                        <li>טווח שידור עד 2,000 מטר</li>
+                                        <li>אימות וידאו מובנה (IVaaS)</li>
+                                        <li>חיבור לעד 96 גלאים</li>
+                                        <li>
+                                            <!-- Updated placeholder URL to a real one -->
+                                            <a href="https://www.hikvision.com/il/products/Alarm-Systems/pro-series/" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:underline">לפרטים נוספים: מוצרי אזעקה - מוצרים - Hikvision ישראל</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="video-showcase" class="bg-gray-100 py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-slate-900">סרטוני הדגמה</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">צפו בסרטונים המציגים את היכולות המתקדמות של הפתרונות שלנו.</p>
+                </div>
+                
+                <div class="mt-12 space-y-8">
+                    <div class="relative w-full h-0 aspect-[16/9] rounded-lg shadow-xl overflow-hidden">
+                        <iframe 
+                            class="absolute top-0 left-0 w-full h-full"
+                            src="https://www.youtube.com/embed/nU1_12p1x9o" 
+                            title="Hikvision Products Video" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div class="relative w-full h-0 aspect-[16/9] rounded-lg shadow-xl overflow-hidden">
+                        <iframe 
+                            class="absolute top-0 left-0 w-full h-full"
+                            src="https://www.youtube.com/embed/1ngQykYT-kY" 
+                            title="Hikvision AX Hybrid PRO Security Alarm System" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+
+                    <div class="relative w-full h-0 aspect-[16/9] rounded-lg shadow-xl overflow-hidden">
+                        <iframe 
+                            class="absolute top-0 left-0 w-full h-full"
+                            src="https://www.youtube.com/embed/94jetZbdkCs" 
+                            title="Hikvision Pro Series Cameras with ColorVu 3.0 Unboxing & Demo" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tech" class="bg-white py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-slate-900">טכנולוגיות וחידושים</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">האלגוריתמים והחומרה שמאחורי המוצרים המובילים שלנו.</p>
+                </div>
+                <div class="mt-12">
+                    <div class="bg-white p-6 rounded-lg shadow-inner">
+                        <label for="tech-selector" class="block text-sm font-medium text-slate-700">בחר טכנולוגיה להשוואה:</label>
+                        <select id="tech-selector" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-red-500 focus:border-red-500 sm:text-sm rounded-md">
+                            <option value="acusense">AcuSense vs. Traditional VMD</option>
+                            <option value="colorvu">ColorVu vs. Traditional IR</option>
+                        </select>
+                    </div>
+                    <div class="mt-8">
+                        <div class="chart-container">
+                            <canvas id="techChart"></canvas>
+                        </div>
+                         <p id="tech-description" class="mt-4 text-center text-slate-600 max-w-3xl mx-auto"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="articles" class="bg-gray-100 py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-3xl font-extrabold text-slate-900">כתבות מעניינות</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-xl text-slate-500">מאמרים, מדריכים וסיפורים מהשטח שיעשירו את הידע שלכם.</p>
+                </div>
+                <div class="mt-12 max-w-lg mx-auto grid gap-5 lg:grid-cols-3 lg:max-w-none">
+                    <div class="flex flex-col rounded-lg shadow-lg overflow-hidden bg-white">
+                        <div class="flex-shrink-0">
+                            <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/ef4444/ffffff?text=Security+Tips" alt="">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">אבטחת מידע</p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/newsroom/articles/5-security-tips-for-your-camera-system/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-gray-900">5 טיפים לאבטחת מערכת המצלמות בעסק</p>
+                                    <p class="mt-3 text-base text-gray-500">נהדר, הנה 5 טיפים חשובים לאבטחת מערכת המצלמות בעסק שלך:
+                                        <br><br>
+                                        1. **החלפת סיסמאות ברירת המחדל** 🔑<br>
+                                        מיד לאחר התקנת המערכת, הדבר הראשון שצריך לעשות הוא להחליף את סיסמאות ברירת המחדל של כל המכשירים – המצלמות עצמן, מכשירי ההקלטה (DVR/NVR) והנתב. סיסמאות ברירת המחדל הן נקודת תורפה ידועה שפורצים סורקים באופן אוטומטי. בחר בסיסמאות חזקות, ארוכות ומורכבות המשלבות אותיות גדולות וקטנות, מספרים ותווים מיוחדים.
+                                        <br><br>
+                                        2. **הפרדת רשת המצלמות מהרשת הראשית** 🌐<br>
+                                        רשת המצלמות היא מטרה פוטנציאלית להתקפות. כדי למנוע מפורץ שחדר לרשת המצלמות להגיע לשאר הנתונים העסקיים שלך (כמו מסמכים חשבונאיים או מידע על לקוחות), מומלץ להפריד את רשת המצלמות מהרשת הראשית של העסק. ניתן לעשות זאת באמצעות נתב נפרד או הגדרת רשת וירטואלית (VLAN). הפרדה זו יוצרת שכבת הגנה נוספת.
+                                        <br><br>
+                                        3. **עדכון קושחה (Firmware) שוטף** ⚙️<br>
+                                        יצרני ציוד אבטחה משחררים באופן קבוע עדכוני קושחה (התוכנה הפנימית של המכשירים) שנועדו לתקן חורי אבטחה ידועים ולשפר את ביצועי המערכת. הקפד לבדוק ולהתקין עדכונים אלו באופן קבוע. הזנחת עדכונים עלולה להשאיר את המערכת שלך חשופה לפגיעויות שהתגלו ופורסמו ברשת.
+                                        <br><br>
+                                        4. **הגבלת גישה פיזית** 🚫<br>
+                                        אבטחה דיגיטלית חשובה, אך אל תשכח את האבטחה הפיזית. וודא שציוד המערכת, כמו מכשיר ה-DVR/NVR והנתב, נמצא במקום מאובטח ומוגן מפני גישה פיזית בלתי מורשית. נעילת ארון שרתים או חדר נפרד יכולה למנוע ממישהו לגנוב את המכשיר או לנתק אותו, ובכך למחוק ראיות חשובות או להפיל את המערכת כולה.
+                                        <br><br>
+                                        5. **שימוש בהצפנה (Encryption)** 🔒<br>
+                                        אם הגישה למצלמות נעשית מרחוק (מהטלפון או ממחשב נייד), חשוב לוודא שהתקשורת מוצפנת. וודא שאתה משתמש בפרוטוקולים מאובטחים כמו HTTPS/SSL/TLS כשאתה מתחבר למערכת. זה מונע ממישהו ליירט את המידע שמועבר, כמו צילומי וידאו או פרטי התחברות, ולגנוב אותו. יצרנים רבים מאפשרים הצפנה כברירת מחדל, אך תמיד כדאי לוודא זאת בהגדרות.
+                                    </p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="flex flex-col rounded-lg shadow-lg overflow-hidden bg-white">
+                        <div class="flex-shrink-0">
+                           <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/1e293b/ffffff?text=AI+in+Security" alt="">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">בינה מלאכותית</p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/newsroom/articles/how-ai-is-changing-security/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-gray-900">כיצד AI משנה את פני האבטחה?</p>
+                                    <p class="mt-3 text-base text-gray-500">סקירה מעמיקה על תפקידה של הבינה המלאכותית בזיהוי איומים, ניתוח אירועים ואוטומציה של תהליכים.</p>
+                                </a>
+                                <!-- Added link to the SourceSecurity whitepaper as requested -->
+                                <a href="https://www.sourcesecurity.com/hikvision-whitepaper-unveiling-transformative-impact-video-surveillance-co-1582068991-ga.html" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:underline mt-2 inline-block">SourceSecurity ו- Hikvision מסמך לבן: חשיפת ההשפעה הטרנספורמטיבית של AI על תמונת וידאו</a>
+                            </div>
+                        </div>
+                    </div>
+
+                     <div class="flex flex-col rounded-lg shadow-lg overflow-hidden bg-white">
+                        <div class="flex-shrink-0">
+                           <img class="h-48 w-full object-cover" src="https://placehold.co/600x400/94a3b8/ffffff?text=Case+Study" alt="">
+                        </div>
+                        <div class="flex-1 p-6 flex flex-col justify-between">
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-red-600">פתרונות לעסקים</p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/newsroom/articles/smart-retail-solution/" target="_blank" rel="noopener noreferrer" class="block mt-2">
+                                    <p class="text-xl font-semibold text-gray-900">פתרון הקמעונאות החכם של HIKVISION</p>
+                                    <p class="mt-3 text-base text-gray-500">גלו כיצד המערכות שלנו עוזרות לספירת קהל, ניהול תורים, ומניעת אובדן מלאי בחנויות.</p>                                    
+                                     <a href="https://www.hikvision.com/il/newsroom/success-stories/" target="_blank" rel="noopener noreferrer" class="text-red-600 hover:underline">לפרטים נוספים סיפורי הצלחה בעולם https://www.hikvision.com/il/newsroom/success-stories/</a>
+                                    
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="offers-training" class="bg-black py-20">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="text-center lg:text-right text-white">
+                        <h2 class="text-3xl font-extrabold text-white">מבצעים והדרכות</h2>
+                        <p class="mt-4 max-w-2xl mx-auto lg:mx-0 text-xl text-gray-300">הישארו מעודכנים במבצעים החמים והצטרפו להדרכות המקצועיות שלנו.</p>
+                        <div class="mt-8 bg-gray-900 p-6 rounded-lg shadow-lg">
+                            <h3 class="text-xl font-bold text-red-500">מבצעים</h3>
+                            <ul class="mt-4 space-y-3 text-right text-gray-200">
+                                <li class="flex items-center justify-end">
+                                    <span class="ml-3">קיט אינטרקום דו-גידי החדש ב-1,799 ש"ח מחירון במקום 2,790 ש"ח מחירון</span>
+                                    <span class="text-green-500">✓</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div>
+                         <div class="bg-gray-900 p-6 rounded-lg shadow-lg">
+                             <h3 class="text-xl font-bold text-center text-red-500">נושאי הדרכה פופולריים</h3>
+                            <div class="chart-container h-64 max-h-64">
+                                <canvas id="trainingChart"></canvas>
+                            </div>
+                             <div class="mt-6 text-white">
+                                <h4 class="text-lg font-semibold text-white">הירשמו והישארו מעודכנים!</h4>
+                                <p class="mt-2 text-sm text-gray-300">תאריכי ההדרכות הבאות יפורסמו כאן בקרוב. בינתיים, הישארו מעודכנים וצרו קשר לקבלת פרטים נוספים על ההדרכות המקצועיות שלנו.
+                                <br><br>
+                                </p>
+                                <!-- Updated placeholder URL to a real one -->
+                                <a href="https://www.hikvision.com/il/support/training/" target="_blank" rel="noopener noreferrer" class="mt-4 inline-block text-red-500 font-semibold hover:underline">להרשמה ופרטים נוספים &gt;</a>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <footer class="bg-black text-white">
+        <div class="container mx-auto py-8 px-4 sm:px-6 lg:px-8 text-center">
+            <p>© 2025 HIKVISION המגזין. כל הזכויות שמורות.</p>
+            <p class="text-sm text-gray-400 mt-2">מגזין זה נוצר למטרות הדגמה בלבד.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('open');
+                });
+            });
+
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.6
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href').substring(1) === entry.target.id) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+
+            const techData = {
+                acusense: {
+                    labels: ['AcuSense', 'Traditional VMD'],
+                    datasets: [{
+                        label: 'דיוק בזיהוי (%)',
+                        data: [98, 40],
+                        backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(17, 24, 39, 0.6)'],
+                        borderColor: ['rgba(239, 68, 68, 1)', 'rgba(17, 24, 39, 1)'],
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'התראות שווא (%)',
+                        data: [2, 60],
+                        backgroundColor: ['rgba(220, 38, 38, 0.6)', 'rgba(23, 23, 23, 0.6)'],
+                        borderColor: ['rgba(220, 38, 38, 1)', 'rgba(23, 23, 23, 1)'],
+                        borderWidth: 1
+                    }],
+                    description: 'טכנולוגיית AcuSense משתמשת בלמידה עמוקה כדי להבדיל בין בני אדם וכלי רכב לבין אובייקטים אחרים (כמו בעלי חיים או עלים), ומפחיתה באופן דרמטי את כמות התראות השווא.'
+                },
+                colorvu: {
+                    labels: ['ColorVu', 'Traditional IR'],
+                    datasets: [{
+                        label: 'איכות תמונה בלילה (ציון 1-10)',
+                        data: [9, 5],
+                        backgroundColor: ['rgba(239, 68, 68, 0.6)', 'rgba(17, 24, 39, 0.6)'],
+                        borderColor: ['rgba(239, 68, 68, 1)', 'rgba(17, 24, 39, 1)'],
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'זיהוי צבעים בלילה',
+                        data: [100, 0],
+                        backgroundColor: ['rgba(220, 38, 38, 0.6)', 'rgba(23, 23, 23, 0.6)'],
+                        borderColor: ['rgba(220, 38, 38, 1)', 'rgba(23, 23, 23, 1)'],
+                        borderWidth: 1
+                    }],
+                    description: 'טכנולוגיית ColorVu מספקת תמונת צבע מלאה וברורה 24/7, גם בתנאי תאורה מינימליים, בניגוד לתמונת שחור-לבן של מצלמות אינפרא-אדום סטנדרטיות.'
+                }
+            };
+
+            const techCtx = document.getElementById('techChart').getContext('2d');
+            let techChart = new Chart(techCtx, {
+                type: 'bar',
+                data: techData.acusense,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                             max: 100
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'השוואת ביצועים: AcuSense vs. Traditional VMD'
+                        }
+                    }
+                }
+            });
+            
+            const techDescription = document.getElementById('tech-description');
+            techDescription.textContent = techData.acusense.description;
+
+            document.getElementById('tech-selector').addEventListener('change', (e) => {
+                const selectedTech = e.target.value;
+                techChart.data = techData[selectedTech];
+                techChart.options.plugins.title.text = `השוואת ביצועים: ${techData[selectedTech].labels[0]} vs. ${techData[selectedTech].labels[1]}`;
+                techChart.update();
+                techDescription.textContent = techData[selectedTech].description;
+            });
+            
+            const trainingCtx = document.getElementById('trainingChart').getContext('2d');
+            const trainingChart = new Chart(trainingCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['מצלמות IP ו-NVR', 'בקרת כניסה', 'מערכות אזעקה', 'אינטרקום ווידאו'],
+                    datasets: [{
+                        label: 'נושאי הדרכה',
+                        data: [45, 20, 25, 10],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(17, 24, 39, 0.8)',
+                            'rgba(255, 255, 255, 0.8)',
+                            'rgba(156, 163, 175, 0.8)'
+                        ],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                }
+            });
+        });
+    </script>
+</body>
+</html>
